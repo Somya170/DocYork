@@ -1,32 +1,137 @@
-from fastapi import APIRouter, UploadFile, File, HTTPException
+from fastapi import APIRouter, UploadFile, File, HTTPException, BackgroundTasks
 from pathlib import Path
 import shutil
+import uuid
+import pandas as pd
 from app.config import RAW_DATA_DIR
 from app.ingestion.loader import load_file_to_duckdb
-from app.ingestion.demo_generator import generate_demo_dataset
+from app.ingestion.file_parser import parse_uploaded_file
+from app.db.duckdb_client import db_client
 from app.engine.profiler import profile_table, get_active_profile
 
 router = APIRouter()
 
-@router.post("/ingest")
-async def upload_and_ingest_file(file: UploadFile = File(...)):
-    """Uploads a CSV, JSON, or Excel file, loads it directly into DuckDB, and profiles it."""
+# Memory cache for ingestion background tasks
+_ingestion_tasks = {}
+
+def process_file_in_background(task_id: str, file_path: Path):
+    """Executes file loading, text parsing, database indexing, and profiling in a background thread."""
+    global _ingestion_tasks
     try:
+        _ingestion_tasks[task_id] = {
+            "status": "PROCESSING",
+            "progress": 5,
+            "message": "Initializing document ingestion..."
+        }
+        
+        ext = file_path.suffix.lower()
+        table_name = file_path.stem.lower().replace("-", "_").replace(" ", "_")
+
+        if ext == ".pdf":
+            # Incremental page-by-page progress reporting for PDFs
+            import pypdf
+            reader = pypdf.PdfReader(str(file_path))
+            pages_data = []
+            total_pages = len(reader.pages)
+            
+            _ingestion_tasks[task_id] = {
+                "status": "PROCESSING",
+                "progress": 10,
+                "message": f"Extracting text from PDF (Total Pages: {total_pages})..."
+            }
+
+            for idx, page in enumerate(reader.pages):
+                # Update progress incrementally up to 50%
+                current_prog = 10 + int((idx / total_pages) * 40)
+                _ingestion_tasks[task_id] = {
+                    "status": "PROCESSING",
+                    "progress": current_prog,
+                    "message": f"Parsing page {idx + 1}/{total_pages}..."
+                }
+                text = page.extract_text() or ""
+                pages_data.append({
+                    "page_number": int(idx + 1),
+                    "text_content": text,
+                    "filename": file_path.name
+                })
+            
+            df = pd.DataFrame(pages_data)
+        else:
+            _ingestion_tasks[task_id] = {
+                "status": "PROCESSING",
+                "progress": 25,
+                "message": "Parsing spreadsheet records..."
+            }
+            df, _ = parse_uploaded_file(file_path)
+
+        # Standardize column headers
+        df.columns = [str(col).strip().lower().replace(" ", "_").replace("-", "_") for col in df.columns]
+
+        _ingestion_tasks[task_id] = {
+            "status": "PROCESSING",
+            "progress": 60,
+            "message": f"Writing {len(df)} records into DuckDB table '{table_name}'..."
+        }
+        
+        db_client.load_df(table_name, df)
+
+        _ingestion_tasks[task_id] = {
+            "status": "PROCESSING",
+            "progress": 80,
+            "message": "Analyzing schema and generating dynamic AI profiles..."
+        }
+        
+        profile_table(table_name)
+
+        _ingestion_tasks[task_id] = {
+            "status": "SUCCESS",
+            "progress": 100,
+            "message": f"Successfully loaded '{file_path.name}'!",
+            "result": {
+                "filename": file_path.name,
+                "table_name": table_name,
+                "rows_inserted": len(df),
+                "columns_detected": list(df.columns)
+            }
+        }
+    except Exception as e:
+        print(f"Background Ingestion Failed for task {task_id}:", e)
+        _ingestion_tasks[task_id] = {
+            "status": "FAILED",
+            "progress": 100,
+            "message": f"File Ingestion Error: {str(e)}"
+        }
+
+@router.post("/ingest")
+def upload_and_ingest_file(background_tasks: BackgroundTasks, file: UploadFile = File(...)):
+    """Uploads file and spawns a background thread task to prevent client request timeouts."""
+    try:
+        task_id = str(uuid.uuid4())
         dest_path = RAW_DATA_DIR / file.filename
+        
         with open(dest_path, "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
 
-        result = load_file_to_duckdb(dest_path)
+        _ingestion_tasks[task_id] = {
+            "status": "PENDING",
+            "progress": 0,
+            "message": "Uploading file to server..."
+        }
+
+        # Spawn background process thread
+        background_tasks.add_task(process_file_in_background, task_id, dest_path)
         
-        # Profile the newly uploaded table
-        table_name = result.get("table_name")
-        if table_name:
-            profile_table(table_name)
-            
-        return result
+        return {"task_id": task_id}
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"File Ingestion Error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"File Upload Error: {str(e)}")
+
+@router.get("/ingest/status/{task_id}")
+def check_ingestion_status(task_id: str):
+    """Returns ingestion progress percentage and current status for client polling."""
+    if task_id not in _ingestion_tasks:
+        raise HTTPException(status_code=404, detail="Ingestion task not found")
+    return _ingestion_tasks[task_id]
 
 @router.get("/table-profile")
 def fetch_active_table_profile():
@@ -38,7 +143,6 @@ def seed_demo_dataset():
     """Generates synthetic 1,000 Industrial Machine dataset in DuckDB."""
     try:
         result = generate_demo_dataset()
-        # Profile the demo dataset machines table
         profile_table("machines")
         return result
     except Exception as e:

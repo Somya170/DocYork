@@ -26,7 +26,7 @@ export async function executeQuery(query: string, machineId?: string, category?:
   return await res.json();
 }
 
-export async function uploadFile(file: File) {
+export async function uploadFile(file: File): Promise<{ task_id: string }> {
   const formData = new FormData();
   formData.append('file', file);
   const res = await fetch(`${API_BASE}/ingest`, {
@@ -34,6 +34,12 @@ export async function uploadFile(file: File) {
     body: formData
   });
   if (!res.ok) throw new Error('File upload failed');
+  return await res.json();
+}
+
+export async function fetchIngestStatus(taskId: string): Promise<{ status: string; progress: number; message: string; result?: any; error?: string }> {
+  const res = await fetch(`${API_BASE}/ingest/status/${taskId}`);
+  if (!res.ok) throw new Error('Failed to fetch ingestion status');
   return await res.json();
 }
 

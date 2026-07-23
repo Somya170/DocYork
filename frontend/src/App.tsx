@@ -41,10 +41,18 @@ export function App() {
       />
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 pb-12">
-        {activeTab === 'qa' && <QueryStudio />}
-        {activeTab === 'fleet' && <FleetDashboard />}
-        {activeTab === 'analytics' && <AnalyticsCharts />}
-        {activeTab === 'ingest' && <DataIngestion onIngestSuccess={checkHealth} />}
+        <div className={activeTab === 'qa' ? '' : 'hidden'}>
+          <QueryStudio />
+        </div>
+        <div className={activeTab === 'fleet' ? '' : 'hidden'}>
+          <FleetDashboard />
+        </div>
+        <div className={activeTab === 'analytics' ? '' : 'hidden'}>
+          <AnalyticsCharts />
+        </div>
+        <div className={activeTab === 'ingest' ? '' : 'hidden'}>
+          <DataIngestion onIngestSuccess={checkHealth} />
+        </div>
       </main>
 
       <footer className="border-t border-slate-900 bg-slate-950 py-6 px-6 text-center text-xs text-slate-500">
