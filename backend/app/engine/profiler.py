@@ -26,6 +26,7 @@ def profile_table(table_name: str) -> Dict[str, Any]:
     """
     Profiles a newly ingested table dynamically, querying DuckDB for metrics,
     and uses the active LLM (Llama/Gemini) to generate tailored questions and insights.
+    Handles both structured tables and unstructured PDF text data.
     """
     global _active_profile_cache
     
@@ -38,32 +39,44 @@ def profile_table(table_name: str) -> Dict[str, Any]:
         # 2. Fetch basic statistics
         total_rows = db_client.execute_query(f"SELECT COUNT(*) as cnt FROM {table_name}")[0]["cnt"]
         
+        # Check if PDF table
+        is_pdf_table = len(cols) == 3 and any(c["column"].lower() == "text_content" for c in cols) and any(c["column"].lower() == "page_number" for c in cols)
+        
         column_summaries = []
-        for c in cols:
-            col_name = c["column"]
-            col_type = c["type"].lower()
-            
-            if "int" in col_type or "double" in col_type or "float" in col_type or "decimal" in col_type:
-                # Numeric column stats
-                stats = db_client.execute_query(f"SELECT MIN({col_name}) as val_min, MAX({col_name}) as val_max, AVG({col_name}) as val_avg FROM {table_name}")[0]
-                column_summaries.append(
-                    f"Numeric Column '{col_name}': Min={stats['val_min']}, Max={stats['val_max']}, Avg={round(stats['val_avg'] or 0, 2)}"
-                )
-            else:
-                # Text/Category column stats
-                freqs = db_client.execute_query(
-                    f"SELECT {col_name} as val, COUNT(*) as cnt FROM {table_name} GROUP BY {col_name} ORDER BY cnt DESC LIMIT 3"
-                )
-                top_vals = [f"'{f['val']}' (x{f['cnt']})" for f in freqs if f["val"] is not None]
-                column_summaries.append(
-                    f"Categorical Column '{col_name}': Top values: {', '.join(top_vals)}"
-                )
+        if is_pdf_table:
+            # Query first 3 pages for sample context
+            sample_rows = db_client.execute_query(f"SELECT page_number, text_content FROM {table_name} ORDER BY page_number ASC LIMIT 3")
+            sample_text = "\n".join([f"Page {r['page_number']}:\n{r['text_content'][:600]}..." for r in sample_rows])
+            column_summaries = [
+                "Unstructured PDF Document",
+                f"Page Count (Rows): {total_rows}",
+                f"Sample text from first pages:\n{sample_text}"
+            ]
+        else:
+            # Structured columns stats
+            for c in cols:
+                col_name = c["column"]
+                col_type = c["type"].lower()
+                
+                if "int" in col_type or "double" in col_type or "float" in col_type or "decimal" in col_type:
+                    stats = db_client.execute_query(f"SELECT MIN({col_name}) as val_min, MAX({col_name}) as val_max, AVG({col_name}) as val_avg FROM {table_name}")[0]
+                    column_summaries.append(
+                        f"Numeric Column '{col_name}': Min={stats['val_min']}, Max={stats['val_max']}, Avg={round(stats['val_avg'] or 0, 2)}"
+                    )
+                else:
+                    freqs = db_client.execute_query(
+                        f"SELECT {col_name} as val, COUNT(*) as cnt FROM {table_name} GROUP BY {col_name} ORDER BY cnt DESC LIMIT 3"
+                    )
+                    top_vals = [f"'{f['val']}' (x{f['cnt']})" for f in freqs if f["val"] is not None]
+                    column_summaries.append(
+                        f"Categorical Column '{col_name}': Top values: {', '.join(top_vals)}"
+                    )
 
         # 3. Formulate LLM Prompt
         system_prompt = (
-            "You are an expert data profiler. Given a database table description and stats, "
+            "You are an expert data profiler. Given a database table description/stats or a PDF document sample, "
             "generate: \n"
-            "1. 5 highly practical, business-relevant natural language questions that can be answered by querying this table.\n"
+            "1. 5 highly practical, business-relevant natural language questions that can be answered by querying this table or document.\n"
             "2. 3 short bullet-point summary insights summarizing key highlights or patterns in the data.\n\n"
             "Rules:\n"
             "- Output strictly a raw JSON string. Do not include markdown backticks (no ```json or ```).\n"
@@ -97,7 +110,6 @@ def profile_table(table_name: str) -> Dict[str, Any]:
         
     except Exception as e:
         print("Auto-Profiling Failed, keeping standard templates. Detail:", e)
-        # On failure, keep table name but use standard suggestions
         _active_profile_cache["table_name"] = table_name
 
     return _active_profile_cache

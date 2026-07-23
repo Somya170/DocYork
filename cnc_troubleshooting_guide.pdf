@@ -1,0 +1,19 @@
+%PDF-1.4
+1 0 obj <</Type /Catalog /Pages 2 0 R>> endobj
+2 0 obj <</Type /Pages /Kids [3 0 R] /Count 1>> endobj
+3 0 obj <</Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources <<>>>> endobj
+4 0 obj <</Length 524>> stream
+BT /F1 12 Tf 50 700 Td (CNC Lathe Troubleshooting Manual. Section 1: Spindle Overheat. If the spindle temperature exceeds 80C, turn off the main power breaker immediately. Check coolant fluid levels and inspect the recirculating pump filter for metallic debris. Refill with Grade 10 Spindle Oil. Section 2: Axis Calibration Fault. Errors in the Z-axis positional accuracy are typically caused by ballscrew backlash. Re-calibrate zero-point reference using the G54 coordinate system offset screen. Adjust parameter 1004 to compensate.) Tj ET
+endstream
+endobj
+xref
+0 5
+0000000000 65535 f
+0000000009 00000 n
+0000000056 00000 n
+0000000111 00000 n
+0000000212 00000 n
+trailer <</Size 5 /Root 1 0 R>>
+startxref
+310
+%%EOF

@@ -105,9 +105,9 @@ export const DataIngestion: React.FC<DataIngestionProps> = ({ onIngestSuccess })
         </div>
 
         <div>
-          <h4 className="text-sm font-bold text-white">Upload Custom Industrial Logs (CSV, JSON, Excel)</h4>
+          <h4 className="text-sm font-bold text-white">Upload Custom Industrial Logs (CSV, JSON, Excel, PDF)</h4>
           <p className="text-xs text-slate-400 mt-1">
-            Drag and drop your historical CSV, JSON, or XLSX file here, or browse from computer
+            Drag and drop your historical CSV, JSON, XLSX, or PDF file here, or browse from computer
           </p>
         </div>
 
@@ -115,7 +115,7 @@ export const DataIngestion: React.FC<DataIngestionProps> = ({ onIngestSuccess })
           <span>Browse File</span>
           <input
             type="file"
-            accept=".csv, .json, .xlsx, .xls, .txt"
+            accept=".csv, .json, .xlsx, .xls, .txt, .pdf"
             className="hidden"
             onChange={(e) => {
               if (e.target.files && e.target.files[0]) {
