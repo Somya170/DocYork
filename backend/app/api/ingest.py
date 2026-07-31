@@ -28,33 +28,24 @@ def process_file_in_background(task_id: str, file_path: Path):
         table_name = file_path.stem.lower().replace("-", "_").replace(" ", "_")
 
         if ext == ".pdf":
-            # Incremental page-by-page progress reporting for PDFs
-            import pypdf
-            reader = pypdf.PdfReader(str(file_path))
-            pages_data = []
-            total_pages = len(reader.pages)
+            # Smart PDF extractor: auto-detects scanned PDFs and uses OCR
+            from app.ingestion.pdf_extractor import smart_extract_pdf
+            
+            def pdf_progress(idx, total, method):
+                current_prog = 10 + int((idx / total) * 40)
+                _ingestion_tasks[task_id] = {
+                    "status": "PROCESSING",
+                    "progress": current_prog,
+                    "message": f"{method}: page {idx + 1}/{total}..."
+                }
             
             _ingestion_tasks[task_id] = {
                 "status": "PROCESSING",
                 "progress": 10,
-                "message": f"Extracting text from PDF (Total Pages: {total_pages})..."
+                "message": "Analyzing PDF structure..."
             }
-
-            for idx, page in enumerate(reader.pages):
-                # Update progress incrementally up to 50%
-                current_prog = 10 + int((idx / total_pages) * 40)
-                _ingestion_tasks[task_id] = {
-                    "status": "PROCESSING",
-                    "progress": current_prog,
-                    "message": f"Parsing page {idx + 1}/{total_pages}..."
-                }
-                text = page.extract_text() or ""
-                pages_data.append({
-                    "page_number": int(idx + 1),
-                    "text_content": text,
-                    "filename": file_path.name
-                })
             
+            pages_data = smart_extract_pdf(str(file_path), progress_callback=pdf_progress)
             df = pd.DataFrame(pages_data)
         else:
             _ingestion_tasks[task_id] = {
