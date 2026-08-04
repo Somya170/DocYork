@@ -58,13 +58,21 @@ def process_file_in_background(task_id: str, file_path: Path):
         # Standardize column headers
         df.columns = [str(col).strip().lower().replace(" ", "_").replace("-", "_") for col in df.columns]
 
-        _ingestion_tasks[task_id] = {
-            "status": "PROCESSING",
-            "progress": 60,
-            "message": f"Writing {len(df)} records into DuckDB table '{table_name}'..."
-        }
-        
-        db_client.load_df(table_name, df)
+        if ext == ".pdf":
+            table_name = "documents"
+            _ingestion_tasks[task_id] = {
+                "status": "PROCESSING",
+                "progress": 60,
+                "message": f"Appending {len(df)} records into DuckDB table '{table_name}'..."
+            }
+            db_client.append_df(table_name, df)
+        else:
+            _ingestion_tasks[task_id] = {
+                "status": "PROCESSING",
+                "progress": 60,
+                "message": f"Writing {len(df)} records into DuckDB table '{table_name}'..."
+            }
+            db_client.load_df(table_name, df)
 
         _ingestion_tasks[task_id] = {
             "status": "PROCESSING",
@@ -138,3 +146,34 @@ def seed_demo_dataset():
         return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Demo Seed Error: {str(e)}")
+
+@router.get("/documents")
+def list_uploaded_documents():
+    """Returns list of unique filenames in the documents table."""
+    try:
+        tables = db_client.list_tables()
+        if 'documents' not in tables:
+            return {"documents": []}
+        rows = db_client.execute_query(
+            "SELECT DISTINCT filename, COUNT(*) as pages FROM documents GROUP BY filename ORDER BY filename"
+        )
+        return {"documents": rows}
+    except Exception as e:
+        return {"documents": [], "error": str(e)}
+
+@router.delete("/documents/{filename}")
+def delete_document(filename: str):
+    """Deletes all pages of a specific document from the documents table."""
+    try:
+        tables = db_client.list_tables()
+        if 'documents' not in tables:
+            raise HTTPException(status_code=404, detail="No documents table found")
+        db_client.execute_query(f"DELETE FROM documents WHERE filename = '{filename}'")
+        remaining = db_client.execute_query("SELECT COUNT(*) as cnt FROM documents")[0]["cnt"]
+        if remaining == 0:
+            db_client.conn.execute("DROP TABLE IF EXISTS documents CASCADE")
+        return {"status": "deleted", "filename": filename}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

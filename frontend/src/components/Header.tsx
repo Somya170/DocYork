@@ -1,5 +1,5 @@
 import React from 'react';
-import { ShieldCheck, Database, Activity, RefreshCw, Layers, Sparkles, Sun, Moon } from 'lucide-react';
+import { ShieldCheck, Database, RefreshCw, Sparkles, Sun, Moon, FileText } from 'lucide-react';
 
 interface HeaderProps {
   activeTab: string;
@@ -23,23 +23,11 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Brand & Yash Technologies Logo */}
         <div className="flex items-center space-x-3">
           <div className="h-10 bg-slate-900/40 rounded-lg flex items-center justify-center p-1.5 border border-slate-800">
-            <img 
-              src="/yash_logo.png" 
-              className="h-7 object-contain rounded" 
-              alt="Yash Technologies Logo" 
-            />
+            <img src="/yash_logo.png" className="h-7 object-contain rounded" alt="Logo" />
           </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-lg font-bold text-white tracking-tight">
-                Yash Technologies
-              </h1>
-              <span className="px-2 py-0.5 text-[9px] font-bold tracking-wider rounded-full flex items-center gap-1 data-qa-badge">
-                <ShieldCheck className="w-2.5 h-2.5" /> DATA QA STUDIO
-              </span>
-            </div>
-            <p className="text-[10px] text-slate-400">Industrial Data QA & Analytics Engine</p>
-          </div>
+          <span className="px-2 py-0.5 text-[9px] font-bold tracking-wider rounded-full flex items-center gap-1 data-qa-badge">
+            <ShieldCheck className="w-2.5 h-2.5" /> DATA QA STUDIO
+          </span>
         </div>
 
         {/* Tab Navigation */}
@@ -56,25 +44,14 @@ export const Header: React.FC<HeaderProps> = ({
           </button>
           
           <button
-            onClick={() => setActiveTab('fleet')}
+            onClick={() => setActiveTab('documents')}
             className={`px-4 py-2 text-xs font-semibold rounded-lg transition-all flex items-center gap-2 ${
-              activeTab === 'fleet'
+              activeTab === 'documents'
                 ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/20'
                 : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
             }`}
           >
-            <Layers className="w-3.5 h-3.5" /> 1,000 Machine Fleet
-          </button>
-
-          <button
-            onClick={() => setActiveTab('analytics')}
-            className={`px-4 py-2 text-xs font-semibold rounded-lg transition-all flex items-center gap-2 ${
-              activeTab === 'analytics'
-                ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/20'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
-            }`}
-          >
-            <Activity className="w-3.5 h-3.5" /> Analytics & Trends
+            <FileText className="w-3.5 h-3.5" /> Documents
           </button>
 
           <button

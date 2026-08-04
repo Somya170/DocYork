@@ -85,6 +85,17 @@ class DuckDBClient:
         self.conn.execute(f"CREATE TABLE {table_name} AS SELECT * FROM temp_df")
         self.conn.unregister('temp_df')
 
+    def append_df(self, table_name: str, df):
+        """Appends DataFrame rows to existing table, creates table if not exists."""
+        self.conn.register('temp_df', df)
+        # Check if table exists
+        existing = self.list_tables()
+        if table_name in existing:
+            self.conn.execute(f"INSERT INTO {table_name} SELECT * FROM temp_df")
+        else:
+            self.conn.execute(f"CREATE TABLE {table_name} AS SELECT * FROM temp_df")
+        self.conn.unregister('temp_df')
+
     def get_table_schema(self, table_name: str) -> List[Dict[str, str]]:
         cursor = self.conn.cursor()
         cursor.execute(f"DESCRIBE {table_name}")

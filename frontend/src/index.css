@@ -241,3 +241,72 @@
 .light input[type="text"]::placeholder {
   color: #94a3b8 !important;
 }
+
+/* Appended specific overrides */
+.light {
+  --bg-primary: #f8fafc;
+  --text-primary: #0f172a;
+}
+
+.light .glass-panel {
+  background: rgba(255, 255, 255, 0.85);
+  border-color: #e2e8f0;
+}
+
+.light header {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: #e2e8f0;
+}
+
+.light header h1,
+.light header span,
+.light header p,
+.light header nav button {
+  color: #1e293b;
+}
+
+.light header nav {
+  background: rgba(241, 245, 249, 0.9);
+  border-color: #e2e8f0;
+}
+
+.light header nav button.bg-cyan-500 {
+  color: white;
+}
+
+.light .text-white,
+.light .text-slate-100,
+.light .text-slate-200,
+.light .text-slate-300 {
+  color: #1e293b;
+}
+
+.light .text-slate-400,
+.light .text-slate-500 {
+  color: #64748b;
+}
+
+.light .bg-\[\#0a0d14\] {
+  background-color: #f1f5f9;
+}
+
+.light .bg-slate-950,
+.light .bg-slate-900\/90,
+.light .bg-slate-900\/40,
+.light .bg-slate-800\/70 {
+  background-color: rgba(241, 245, 249, 0.9);
+}
+
+.light .border-slate-800,
+.light .border-slate-900 {
+  border-color: #e2e8f0;
+}
+
+.light footer {
+  background: #ffffff;
+  border-color: #e2e8f0;
+}
+
+.light footer span {
+  color: #475569;
+}

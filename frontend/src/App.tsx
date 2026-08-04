@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Header } from './components/Header';
 import { QueryStudio } from './components/QueryStudio';
-import { FleetDashboard } from './components/FleetDashboard';
-import { AnalyticsCharts } from './components/AnalyticsCharts';
+import { DocumentsLibrary } from './components/DocumentsLibrary';
 import { DataIngestion } from './components/DataIngestion';
 import { checkBackendHealth } from './services/api';
 
@@ -44,11 +43,8 @@ export function App() {
         <div className={activeTab === 'qa' ? '' : 'hidden'}>
           <QueryStudio />
         </div>
-        <div className={activeTab === 'fleet' ? '' : 'hidden'}>
-          <FleetDashboard />
-        </div>
-        <div className={activeTab === 'analytics' ? '' : 'hidden'}>
-          <AnalyticsCharts />
+        <div className={activeTab === 'documents' ? '' : 'hidden'}>
+          <DocumentsLibrary />
         </div>
         <div className={activeTab === 'ingest' ? '' : 'hidden'}>
           <DataIngestion onIngestSuccess={checkHealth} />
@@ -57,8 +53,8 @@ export function App() {
 
       <footer className="border-t border-slate-900 bg-slate-950 py-6 px-6 text-center text-xs text-slate-500">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
-          <span>Yash Technologies &copy; 2026</span>
-          <span className="text-cyan-500 font-medium">Data QA Studio • All Rights Reserved</span>
+          <span>Data QA Studio &copy; 2026</span>
+          <span className="text-cyan-500 font-medium">Powered by DuckDB • Zero Hallucination Engine</span>
         </div>
       </footer>
     </div>
