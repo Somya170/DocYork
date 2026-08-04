@@ -84,25 +84,25 @@
   --accent-rose: #dc2626;
 }
 
+/* Main Body */
 .light body {
   background-color: var(--bg-main) !important;
   color: #0f172a !important;
 }
 
-.light ::-webkit-scrollbar-track {
-  background: #f8fafc;
-}
-.light ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-}
-.light ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+.light .bg-\[\#0a0d14\] {
+  background-color: #f8fafc !important;
 }
 
-/* Panel Background Overrides */
+/* Scrollbar */
+.light ::-webkit-scrollbar-track { background: #f8fafc; }
+.light ::-webkit-scrollbar-thumb { background: #cbd5e1; }
+.light ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+/* ---- Glass Panels ---- */
 .light .glass-panel {
-  background: rgba(255, 255, 255, 0.85) !important;
-  border-color: rgba(0, 0, 0, 0.08) !important;
+  background: rgba(255, 255, 255, 0.9) !important;
+  border-color: #e2e8f0 !important;
   color: #0f172a !important;
 }
 
@@ -113,7 +113,35 @@
   color: #0f172a !important;
 }
 
-/* Text Color Contrast Overrides */
+/* ---- ALL Dark Backgrounds → Light ---- */
+.light .bg-slate-950,
+.light .bg-slate-900,
+.light .bg-slate-950\/70,
+.light .bg-slate-900\/90,
+.light .bg-slate-900\/80,
+.light .bg-slate-900\/60,
+.light .bg-slate-900\/40,
+.light .bg-slate-800\/70,
+.light .bg-slate-800\/60 {
+  background-color: #f1f5f9 !important;
+}
+
+/* Inner cards (Evidence Trail, Audit boxes) */
+.light .bg-cyan-950,
+.light .bg-cyan-950\/60,
+.light .bg-cyan-950\/40 {
+  background-color: rgba(2, 132, 199, 0.06) !important;
+}
+
+.light .bg-emerald-950\/60 {
+  background-color: rgba(22, 163, 74, 0.06) !important;
+}
+
+.light .bg-rose-950\/50 {
+  background-color: rgba(220, 38, 38, 0.06) !important;
+}
+
+/* ---- Text Colors ---- */
 .light .text-white,
 .light .text-slate-100,
 .light .text-slate-200 {
@@ -132,17 +160,65 @@
   color: #64748b !important;
 }
 
+/* Colored text stays readable in light */
+.light .text-cyan-300 {
+  color: #0369a1 !important;
+}
+
+.light .text-cyan-400 {
+  color: #0284c7 !important;
+}
+
+.light .text-emerald-300 {
+  color: #16a34a !important;
+}
+
+.light .text-emerald-400 {
+  color: #059669 !important;
+}
+
+.light .text-rose-300 {
+  color: #dc2626 !important;
+}
+
+/* ---- Borders ---- */
 .light .border-slate-800,
 .light .border-slate-900,
 .light .border-slate-800\/80 {
   border-color: #e2e8f0 !important;
 }
 
-.light .bg-\[\#0a0d14\] {
-  background-color: #f8fafc !important;
+.light .border-cyan-500\/20,
+.light .border-cyan-500\/30 {
+  border-color: rgba(2, 132, 199, 0.15) !important;
 }
 
-/* Navigation and Headers */
+.light .border-emerald-500\/30 {
+  border-color: rgba(22, 163, 74, 0.15) !important;
+}
+
+.light .border-rose-500\/30 {
+  border-color: rgba(220, 38, 38, 0.15) !important;
+}
+
+/* ---- Header ---- */
+.light header {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border-color: #e2e8f0 !important;
+}
+
+.light header button:not(.bg-cyan-500):not(.bg-gradient-to-r) {
+  background-color: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  color: #334155 !important;
+}
+
+.light header button:not(.bg-cyan-500):not(.bg-gradient-to-r):hover {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+}
+
+/* ---- Navigation Tabs ---- */
 .light nav {
   background-color: #f1f5f9 !important;
   border-color: #e2e8f0 !important;
@@ -157,18 +233,11 @@
   background-color: rgba(0, 0, 0, 0.05) !important;
 }
 
-.light header button {
-  background-color: #ffffff !important;
-  border: 1px solid #cbd5e1 !important;
-  color: #334155 !important;
+.light nav button.bg-cyan-500 {
+  color: white !important;
 }
 
-.light header button:hover {
-  background-color: #f8fafc !important;
-  color: #0f172a !important;
-}
-
-/* DATA QA STUDIO Badge visibility in Light Theme */
+/* ---- DATA QA STUDIO Badge ---- */
 .light .data-qa-badge {
   background-color: rgba(2, 132, 199, 0.08) !important;
   border: 1px solid rgba(2, 132, 199, 0.25) !important;
@@ -179,23 +248,7 @@
   color: #0284c7 !important;
 }
 
-/* Ingestion, QueryStudio Sub-Boxes */
-.light .bg-slate-950,
-.light .bg-slate-900 {
-  background-color: #f8fafc !important;
-}
-
-.light .bg-slate-900\/90 {
-  background-color: #f1f5f9 !important;
-}
-
-.light .bg-slate-950\/70,
-.light .bg-slate-900\/60 {
-  background-color: #ffffff !important;
-  border-color: #cbd5e1 !important;
-}
-
-/* Suggested Questions Chips in Light Theme */
+/* ---- Suggested Question Chips ---- */
 .light .glass-panel button.text-left {
   background-color: rgba(2, 132, 199, 0.04) !important;
   border-color: rgba(2, 132, 199, 0.15) !important;
@@ -208,13 +261,16 @@
   color: #0369a1 !important;
 }
 
-/* Footer elements overrides */
-.light footer {
-  background-color: #ffffff !important;
-  border-color: #cbd5e1 !important;
+/* ---- Search Input ---- */
+.light input[type="text"] {
+  color: #0f172a !important;
 }
 
-/* Tables, lists & grids */
+.light input[type="text"]::placeholder {
+  color: #94a3b8 !important;
+}
+
+/* ---- Tables ---- */
 .light table thead tr {
   background-color: #f1f5f9 !important;
   border-color: #cbd5e1 !important;
@@ -233,80 +289,24 @@
   border-color: #e2e8f0 !important;
 }
 
-/* Search input controls */
-.light input[type="text"] {
+/* ---- Code Blocks (SQL Inspector, Trace) ---- */
+.light pre,
+.light .font-mono {
   color: #0f172a !important;
 }
 
-.light input[type="text"]::placeholder {
-  color: #94a3b8 !important;
-}
-
-/* Appended specific overrides */
-.light {
-  --bg-primary: #f8fafc;
-  --text-primary: #0f172a;
-}
-
-.light .glass-panel {
-  background: rgba(255, 255, 255, 0.85);
-  border-color: #e2e8f0;
-}
-
-.light header {
-  background: rgba(255, 255, 255, 0.95);
-  border-color: #e2e8f0;
-}
-
-.light header h1,
-.light header span,
-.light header p,
-.light header nav button {
-  color: #1e293b;
-}
-
-.light header nav {
-  background: rgba(241, 245, 249, 0.9);
-  border-color: #e2e8f0;
-}
-
-.light header nav button.bg-cyan-500 {
-  color: white;
-}
-
-.light .text-white,
-.light .text-slate-100,
-.light .text-slate-200,
-.light .text-slate-300 {
-  color: #1e293b;
-}
-
-.light .text-slate-400,
-.light .text-slate-500 {
-  color: #64748b;
-}
-
-.light .bg-\[\#0a0d14\] {
-  background-color: #f1f5f9;
-}
-
-.light .bg-slate-950,
-.light .bg-slate-900\/90,
-.light .bg-slate-900\/40,
-.light .bg-slate-800\/70 {
-  background-color: rgba(241, 245, 249, 0.9);
-}
-
-.light .border-slate-800,
-.light .border-slate-900 {
-  border-color: #e2e8f0;
-}
-
+/* ---- Footer ---- */
 .light footer {
-  background: #ffffff;
-  border-color: #e2e8f0;
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
 }
 
 .light footer span {
-  color: #475569;
+  color: #475569 !important;
 }
+
+/* ---- Document Library Cards ---- */
+.light .glass-panel.rounded-xl {
+  background: #ffffff !important;
+}
+

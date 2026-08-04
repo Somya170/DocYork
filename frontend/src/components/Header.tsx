@@ -20,11 +20,13 @@ export const Header: React.FC<HeaderProps> = ({
     <header className="sticky top-0 z-50 glass-panel border-b border-slate-800 px-6 py-4 mb-6">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
         
-        {/* Brand & Yash Technologies Logo */}
+        {/* Brand Logo & Badge */}
         <div className="flex items-center space-x-3">
-          <div className="h-10 bg-slate-900/40 rounded-lg flex items-center justify-center p-1.5 border border-slate-800">
-            <img src="/yash_logo.png" className="h-7 object-contain rounded" alt="Logo" />
-          </div>
+          <img 
+            src="/yash_logo.png" 
+            className="h-9 object-contain rounded-md bg-white p-1" 
+            alt="Yash Technologies Logo" 
+          />
           <span className="px-2 py-0.5 text-[9px] font-bold tracking-wider rounded-full flex items-center gap-1 data-qa-badge">
             <ShieldCheck className="w-2.5 h-2.5" /> DATA QA STUDIO
           </span>

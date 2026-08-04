@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Upload, Database, CheckCircle2, Sparkles, RefreshCw, AlertCircle } from 'lucide-react';
-import { uploadFile, loadDemoData, fetchIngestStatus } from '../services/api';
+import { Upload, CheckCircle2, RefreshCw, AlertCircle } from 'lucide-react';
+import { uploadFile, fetchIngestStatus } from '../services/api';
 
 interface DataIngestionProps {
   onIngestSuccess: () => void;
@@ -63,59 +63,10 @@ export const DataIngestion: React.FC<DataIngestionProps> = ({ onIngestSuccess })
     }
   };
 
-  const handleSeedDemo = async () => {
-    setLoading(true);
-    setProgress(20);
-    setStatusMessage('Initializing 1,000 machines seed...');
-    setMessage(null);
-    try {
-      const res = await loadDemoData();
-      setProgress(100);
-      setMessage({
-        type: 'success',
-        text: 'Successfully generated and loaded 1,000 Industrial Machines, 5,000 Maintenance Logs, and 3,000 Operator Schedules into DuckDB!',
-        details: res
-      });
-      onIngestSuccess();
-    } catch (err: any) {
-      setMessage({
-        type: 'error',
-        text: err.message || 'Failed to generate demo dataset.'
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
-      {/* 1-Click Demo Seed Card */}
-      <div className="glass-panel-glow p-6 rounded-2xl border border-cyan-500/30 flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div className="space-y-1">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-cyan-950/80 border border-cyan-500/30 rounded-full text-cyan-300 text-xs font-semibold">
-            <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
-            <span>Instant Pre-packaged Testing</span>
-          </div>
-          <h3 className="text-lg font-bold text-white mt-1">Load 1,000 Industrial Machines Demo Dataset</h3>
-          <p className="text-xs text-slate-400 max-w-lg">
-            Instantly seed DuckDB with 1,000 synthetic industrial machines, 5,000+ maintenance logs, and operator shift schedules to test zero-hallucination natural language queries immediately.
-          </p>
-        </div>
-
-        <button
-          onClick={handleSeedDemo}
-          disabled={loading}
-          className="px-6 py-3.5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold text-xs rounded-xl shadow-lg shadow-cyan-500/20 disabled:opacity-50 transition flex items-center gap-2 shrink-0 justify-center"
-        >
-          {loading ? (
-            <RefreshCw className="w-4 h-4 animate-spin text-slate-950" />
-          ) : (
-            <Database className="w-4 h-4 text-slate-950" />
-          )}
-          <span>Seed 1,000 Machine Dataset</span>
-        </button>
-      </div>
-
       {/* Real-time Ingestion Progress Bar */}
       {loading && (
         <div className="glass-panel p-6 rounded-2xl border border-cyan-500/20 space-y-4">
@@ -189,24 +140,25 @@ export const DataIngestion: React.FC<DataIngestionProps> = ({ onIngestSuccess })
         <div
           className={`p-5 rounded-2xl border text-xs space-y-2 ${
             message.type === 'success'
-              ? 'bg-emerald-950/40 border-emerald-500/30 text-emerald-300'
-              : 'bg-rose-950/40 border-rose-500/30 text-rose-300'
+              ? 'border-emerald-500/30'
+              : 'border-rose-500/30'
           }`}
+          style={{background: '#ffffff'}}
         >
           <div className="flex items-center gap-2 font-bold text-sm">
             {message.type === 'success' ? (
-              <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+              <CheckCircle2 className="w-5 h-5 text-emerald-500" />
             ) : (
-              <AlertCircle className="w-5 h-5 text-rose-400" />
+              <AlertCircle className="w-5 h-5 text-rose-500" />
             )}
-            <span>{message.text}</span>
+            <span style={{color: message.type === 'success' ? '#059669' : '#dc2626'}}>{message.text}</span>
           </div>
 
           {message.details && (
-            <div className="bg-slate-950/80 p-3 rounded-xl border border-slate-800 font-mono text-[11px] text-slate-300 space-y-1">
-              <div>Rows Inserted: <span className="text-cyan-400 font-bold">{message.details.rows_inserted || message.details.machines_count}</span></div>
+            <div className="p-3 rounded-xl border font-mono text-[11px] space-y-1" style={{background: 'rgba(0,0,0,0.05)', borderColor: 'rgba(0,0,0,0.1)'}}>
+              <div style={{color: '#334155'}}>Rows Inserted: <span className="font-bold" style={{color: '#0284c7'}}>{message.details.rows_inserted || message.details.machines_count}</span></div>
               {message.details.columns_detected && (
-                <div>Columns Detected: {message.details.columns_detected.join(', ')}</div>
+                <div style={{color: '#334155'}}>Columns Detected: {message.details.columns_detected.join(', ')}</div>
               )}
             </div>
           )}
