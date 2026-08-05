@@ -3,7 +3,7 @@ from typing import List, Dict, Any
 from app.db.duckdb_client import db_client
 from app.engine.profiler import get_active_profile
 
-def perform_semantic_search(query: str, limit: int = 10) -> List[Dict[str, Any]]:
+def perform_semantic_search(query: str, limit: int = 10, filter_document: str = None) -> List[Dict[str, Any]]:
     """
     Performs dynamic keyword search ranker across text/varchar columns in the active table.
     Uses SQL-based term matching counts to rank rows by relevance.
@@ -58,6 +58,10 @@ def perform_semantic_search(query: str, limit: int = 10) -> List[Dict[str, Any]]
 
     score_select = " + ".join(score_components)
     where_clause = " OR ".join(where_conditions)
+
+    # Add document filter if specified
+    if filter_document and target_table == 'documents':
+        where_clause = f"(filename = '{filter_document}') AND ({where_clause})"
 
     sql = f"""
         SELECT *, ({score_select}) as match_score

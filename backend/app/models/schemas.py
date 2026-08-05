@@ -5,6 +5,7 @@ class QueryRequest(BaseModel):
     query: str = Field(..., description="Natural language question about machine logs, schedules, or analytics")
     filter_machine_id: Optional[str] = None
     filter_category: Optional[str] = None
+    filter_document: Optional[str] = None
 
 class EvidenceItem(BaseModel):
     row_index: int

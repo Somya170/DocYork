@@ -37,7 +37,7 @@ def execute_natural_language_query(request: QueryRequest):
         # Step 2: Query execution routing
         if is_pdf:
             # Skip SQL translation for prose PDFs and execute semantic match
-            results = perform_semantic_search(request.query)
+            results = perform_semantic_search(request.query, filter_document=request.filter_document)
             exec_type = "SEMANTIC_TEXT"
         else:
             # Try SQL generation first for structured tables
@@ -50,7 +50,7 @@ def execute_natural_language_query(request: QueryRequest):
 
             # Fall back to semantic keyword search if SQL execution yielded no records
             if not results:
-                results = perform_semantic_search(request.query)
+                results = perform_semantic_search(request.query, filter_document=request.filter_document)
                 exec_type = "SEMANTIC_TEXT"
             else:
                 if exec_type == "SEMANTIC_TEXT":

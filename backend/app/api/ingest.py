@@ -168,11 +168,25 @@ def delete_document(filename: str):
         tables = db_client.list_tables()
         if 'documents' not in tables:
             raise HTTPException(status_code=404, detail="No documents table found")
-        db_client.execute_query(f"DELETE FROM documents WHERE filename = '{filename}'")
+        db_client.execute_raw(f"DELETE FROM documents WHERE filename = '{filename}'")
         remaining = db_client.execute_query("SELECT COUNT(*) as cnt FROM documents")[0]["cnt"]
         if remaining == 0:
             db_client.conn.execute("DROP TABLE IF EXISTS documents CASCADE")
         return {"status": "deleted", "filename": filename}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.put("/documents/{filename}/rename")
+def rename_document(filename: str, new_name: str):
+    """Renames a document (updates filename column) in the documents table."""
+    try:
+        tables = db_client.list_tables()
+        if 'documents' not in tables:
+            raise HTTPException(status_code=404, detail="No documents table found")
+        db_client.execute_raw(f"UPDATE documents SET filename = '{new_name}' WHERE filename = '{filename}'")
+        return {"status": "renamed", "old_name": filename, "new_name": new_name}
     except HTTPException:
         raise
     except Exception as e:

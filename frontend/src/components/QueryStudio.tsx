@@ -24,6 +24,8 @@ export const QueryStudio: React.FC = () => {
   ]);
   const [activeTable, setActiveTable] = useState<string | null>(null);
   const [refreshingProfile, setRefreshingProfile] = useState(false);
+  const [documents, setDocuments] = useState<{filename: string; pages: number}[]>([]);
+  const [selectedDocument, setSelectedDocument] = useState<string>('all');
 
   const loadProfile = async () => {
     setRefreshingProfile(true);
@@ -45,8 +47,19 @@ export const QueryStudio: React.FC = () => {
     }
   };
 
+  const fetchDocuments = async () => {
+    try {
+      const res = await fetch('http://127.0.0.1:8000/api/documents');
+      const data = await res.json();
+      setDocuments(data.documents || []);
+    } catch (err) {
+      console.warn('Failed to fetch documents:', err);
+    }
+  };
+
   useEffect(() => {
     loadProfile();
+    fetchDocuments();
   }, []);
 
   const handleAsk = async (promptToRun?: string) => {
@@ -56,7 +69,7 @@ export const QueryStudio: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await executeQuery(q);
+      const res = await executeQuery(q, selectedDocument !== 'all' ? selectedDocument : undefined);
       setResponse(res);
     } catch (err: any) {
       setError(err.message || 'Error executing query');
@@ -138,6 +151,25 @@ export const QueryStudio: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Document Filter Dropdown */}
+      {documents.length > 0 && (
+        <div className="glass-panel p-3 rounded-xl border border-slate-800 flex items-center gap-3">
+          <span className="text-xs text-slate-400 font-semibold uppercase tracking-wider shrink-0 pl-2">Query Scope:</span>
+          <select
+            value={selectedDocument}
+            onChange={(e) => setSelectedDocument(e.target.value)}
+            className="flex-1 bg-slate-900/80 text-sm text-slate-200 py-2 px-3 rounded-lg border border-slate-700 focus:outline-none focus:border-cyan-500/50 transition appearance-none cursor-pointer"
+          >
+            <option value="all">📚 All Documents (Cross-document search)</option>
+            {documents.map((doc) => (
+              <option key={doc.filename} value={doc.filename}>
+                📄 {doc.filename} ({doc.pages} pages)
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
 
       {/* Query Search Bar */}
       <div className="glass-panel p-2 rounded-2xl border border-slate-800 flex items-center gap-2">

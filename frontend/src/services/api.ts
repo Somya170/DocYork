@@ -13,11 +13,11 @@ export async function checkBackendHealth() {
   }
 }
 
-export async function executeQuery(query: string, machineId?: string, category?: string): Promise<QueryResponse> {
+export async function executeQuery(query: string, filter_document?: string, filter_machine_id?: string, filter_category?: string): Promise<QueryResponse> {
   const res = await fetch(`${API_BASE}/query`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ query, filter_machine_id: machineId, filter_category: category })
+    body: JSON.stringify({ query, filter_document, filter_machine_id, filter_category })
   });
   if (!res.ok) {
     const errData = await res.json().catch(() => ({ detail: 'API Error' }));
