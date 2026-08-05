@@ -71,6 +71,40 @@
   color: #22d3ee !important;
 }
 
+/* Document card styling */
+.doc-card {
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.doc-card:hover {
+  transform: translateY(-2px);
+}
+
+.light .doc-card {
+  background: #ffffff !important;
+  backdrop-filter: none;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+
+.light .doc-card:hover {
+  box-shadow: 0 8px 25px rgba(2, 132, 199, 0.08) !important;
+  border-color: rgba(2, 132, 199, 0.3) !important;
+}
+
+/* Global hover lift effect */
+.light .glass-panel:hover {
+  box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+}
+
+/* Light theme select/dropdown */
+.light select {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+  border-color: #e2e8f0 !important;
+}
+
 /* ==========================================================================
    PREMIUM LIGHT THEME SYSTEM OVERRIDES
    ========================================================================== */

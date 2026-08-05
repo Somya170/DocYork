@@ -157,12 +157,7 @@ export const DocumentsLibrary: React.FC = () => {
           {filtered.map((doc) => (
             <div
               key={doc.filename}
-              className="relative rounded-xl p-5 border border-slate-700/50 hover:border-cyan-500/40 transition-all group"
-              style={{
-                background: 'rgba(15, 23, 42, 0.6)',
-                backdropFilter: 'blur(16px)',
-                WebkitBackdropFilter: 'blur(16px)',
-              }}
+              className="doc-card relative rounded-xl p-5 border border-slate-200 dark:border-slate-700/50 hover:border-cyan-500/40 hover:shadow-lg hover:shadow-cyan-500/5 transition-all duration-200 group"
             >
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3 min-w-0 flex-1">

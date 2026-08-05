@@ -7,7 +7,7 @@ import { checkBackendHealth } from './services/api';
 
 export function App() {
   const [activeTab, setActiveTab] = useState('qa');
-  const [theme, setTheme] = useState('dark');
+  const [theme, setTheme] = useState('light');
 
   const checkHealth = async () => {
     await checkBackendHealth();
@@ -24,6 +24,8 @@ export function App() {
   };
 
   useEffect(() => {
+    // Set light theme on mount
+    document.documentElement.classList.add('light');
     checkHealth();
     const interval = setInterval(checkHealth, 30000);
     return () => clearInterval(interval);
